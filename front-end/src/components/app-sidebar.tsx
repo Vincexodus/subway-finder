@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -12,7 +12,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { Chatbot } from "./chatbot";
 import { MessageCircle, MapPin, Clock, Search, X } from "lucide-react";
@@ -34,12 +33,10 @@ export function AppSidebar({
   onSearch,
 }: AppSidebarProps) {
   const [showChatbot, setShowChatbot] = useState(false);
-  const { state } = useSidebar();
   const mapRef = useRef<{ clearMarkers: () => void }>(null);
 
   // Search state
   const [searchTerm, setSearchTerm] = useState("");
-  const [hasSearched, setHasSearched] = useState(false);
 
   // Filter outlets by name as user types
   const filteredOutlets =
@@ -51,13 +48,11 @@ export function AppSidebar({
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    setHasSearched(true);
     onSearch(searchTerm);
   };
 
   const handleClearSearch = () => {
     setSearchTerm("");
-    setHasSearched(false);
     mapRef.current?.clearMarkers();
   };
 

@@ -5,10 +5,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { GoogleMap } from "@/components/google-map";
 import { OutletInfo } from "@/components/outlet-info";
-import { Button } from "@/components/ui/button";
-import { MapPin, ChevronDown, ChevronUp } from "lucide-react";
 import type { Outlet, MapCenter } from "@/types/outlet";
-import { NearbyOutletList } from "@/components/nearby-outlet";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 
@@ -21,15 +18,9 @@ export default function HomePage() {
     lng: -74.006,
   });
   const [radius, setRadius] = useState(5);
-  const [userLocation, setUserLocation] = useState<MapCenter | null>(null);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<Outlet[]>([]);
-  const [show, setShow] = useState<"all" | "nearby">("all");
-  const [showNearby, setShowNearby] = useState(true);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [, setSearchTerm] = useState("");
   const mapRef = useRef<{ clearMarkers: () => void }>(null);
-
   const fetchAllOutlets = async () => {
     setLoading(true);
     try {
@@ -56,17 +47,6 @@ export default function HomePage() {
     setNearbyOutlets([]);
     mapRef.current?.clearMarkers();
   };
-
-  useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setSearchResults([]);
-      return;
-    }
-    const results = outlets.filter((outlet) =>
-      outlet.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setSearchResults(results);
-  }, [searchTerm, outlets]);
 
   const selectOutletAndFetchNearby = async (
     outlet: Outlet,

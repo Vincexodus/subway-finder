@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User } from "lucide-react";
-import type { Outlet } from "@/types/outlet";
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 
 interface Message {
@@ -59,7 +58,7 @@ export function Chatbot() {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botMessage]);
-    } catch (err) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
