@@ -25,7 +25,7 @@ A full-stack web application for searching, viewing, and querying Subway outlets
 - **Interactive Map:** View Subway outlets on a Google Map, filter by proximity.
 - **Outlet Search:** Search outlets by name/address.
 - **Outlet Details:** View address, hours, directions, and nearby outlets.
-- **AI Chatbot:** Ask questions about outlets using a RAG (Retrieval-Augmented Generation) chatbot.
+- **AI Chatbot:** It uses RAG by embedding your outlets and query, retrieving the most relevant ones, and generating an answer using a chat model based on those results.
 - **Admin Scripts:** Scrape and geocode outlet data, sync with Supabase.
 
 ---
@@ -193,19 +193,7 @@ A full-stack web application for searching, viewing, and querying Subway outlets
 
   - `GET /outlets` — List all outlets.
   - `GET /outlets/nearby?latitude=...&longitude=...&distance_km=...` — Find outlets within radius via Haversine formula.
-  - `POST /chat-completion` — RAG chatbot for outlet Q&A.
+  - `POST /chat-completion` — fetches outlet records, embeds them and the user’s query using Hugging Face, retrieves the most semantically relevant outlets via vector search to feed those top matches into a Groq-powered chat model to generate the answer.
 
 - **Environment Variables:**  
   Store all secrets in `.env` files (never commit them).
-
----
-
-## License
-
-MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-## Contact
-
-For questions or contributions, please open an issue or pull request.
