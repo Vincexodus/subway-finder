@@ -32,8 +32,8 @@ A full-stack web application for searching, viewing, and querying Subway outlets
 
 ## Architecture Overview
 
-- **Front-End:** Next.js (React) app for UI, map, and chatbot.
-- **Back-End:** FastAPI Python server for API, search, and chatbot endpoint.
+- **Front-End (deployed on vercel):** Next.js (React) app for UI, map, and chatbot.
+- **Back-End (deployed on vercel):** FastAPI Python server for API, search, and chatbot endpoint.
 - **Database:** Supabase (PostgreSQL) for storing outlet data.
 - **Data Pipeline:** Python scripts for scraping and geocoding outlet data.
 - **AI Integration:** RAG chatbot using Groq API and Sentence Transformers for semantic search.

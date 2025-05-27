@@ -6,16 +6,13 @@ Serves outlet data with geographical coordinates and provides chatbot functional
 
 from fastapi import FastAPI, HTTPException, Query, Depends, Body
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
-from datetime import datetime
 import logging
 from contextlib import asynccontextmanager
 import os
 from supabase import create_client, Client
 import math
-from openai import OpenAI
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
