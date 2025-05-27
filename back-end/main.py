@@ -109,13 +109,16 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+origins = [
+    "https://subway-finder.vercel.app"
+]
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,        # <-- frontend domains you trust
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],          # <-- GET, POST, PUT, etc.
+    allow_headers=["*"],          # <-- Authorization, Content-Type, etc.
 )
 
 @app.get("/outlets", response_model=List[Outlet])
