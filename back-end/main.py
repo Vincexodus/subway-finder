@@ -6,18 +6,20 @@ Serves outlet data with geographical coordinates and provides chatbot functional
 
 from fastapi import FastAPI, HTTPException, Query, Depends, Body
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
+from datetime import datetime
 import logging
 from contextlib import asynccontextmanager
 import os
 from supabase import create_client, Client
 import math
-from sentence_transformers import SentenceTransformer
-import faiss
-import numpy as np
 import requests
 from dotenv import load_dotenv
+import uvicorn
+import numpy as np
+import faiss
 
 load_dotenv()
 
@@ -33,6 +35,8 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+HUGGINGFACE_TOKEN = os.getenv("HF_TOKEN")
+EMBED_URL = "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction"
 
 # Pydantic models
 class Outlet(BaseModel):
@@ -69,24 +73,27 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
 
-
-# Initialize model
-embedder = SentenceTransformer('all-MiniLM-L6-v2')
+def get_hf_embedding(texts: list[str]):
+    headers = {"Authorization": f"Bearer {HUGGINGFACE_TOKEN}"}
+    resp = requests.post(EMBED_URL, headers=headers, json={"inputs": texts})
+    resp.raise_for_status()
+    data = resp.json()
+    return data  # List of embeddings
 
 def build_vector_store(outlets):
     outlet_texts = [
         f"{o['name']} at {o['address']}. Hours: {o.get('operating_hours', 'N/A')}"
         for o in outlets
     ]
-    # Convert embeddings to float32
-    embeddings = embedder.encode(outlet_texts, convert_to_numpy=True).astype(np.float32)
+    # Get embeddings from Hugging Face API
+    embeddings = get_hf_embedding(outlet_texts)
+    embeddings = np.array(embeddings, dtype=np.float32)
 
     # Build FAISS index
     index = faiss.IndexFlatL2(embeddings.shape[1])
     index.add(embeddings) # type: ignore
 
     return index, outlet_texts
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -154,14 +161,13 @@ def chat_completion(request: ChatRequest):
         # Step 1: Fetch data from Supabase
         outlets = get_all_outlets()
 
-        # Step 2: Build vector index
+        # Step 2: Build vector index using Hugging Face API
         index, outlet_texts = build_vector_store(outlets)
 
-        # Step 3: Embed user query
-        query_embedding = embedder.encode(request.query, convert_to_numpy=True)
+        # Step 3: Embed user query using Hugging Face API
+        query_embedding = np.array(get_hf_embedding(request.query), dtype=np.float32)
 
         # Step 4: Search for top matches
-        # 30,000 token limit for Llama 4 Scout
         k = min(20, len(outlet_texts))
         D, I = index.search(np.array([query_embedding]), k=k) # type: ignore
         top_matches = [outlet_texts[i] for i in I[0]]
@@ -199,3 +205,6 @@ def chat_completion(request: ChatRequest):
     except Exception as e:
         logger.error(f"Groq API error: {e}")
         raise HTTPException(status_code=500, detail=f"Error: {e}")
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

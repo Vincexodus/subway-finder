@@ -4,6 +4,5 @@ python-dotenv
 requests
 pydantic
 supabase
-sentence-transformers
 faiss-cpu
 numpy
