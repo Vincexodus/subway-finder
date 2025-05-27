@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-dotenv
+supabase
+openai
+sentence-transformers
+faiss-cpu
+numpy
+requests
+pydantic
