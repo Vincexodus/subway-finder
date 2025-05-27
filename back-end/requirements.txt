@@ -3,7 +3,7 @@ uvicorn
 python-dotenv
 supabase
 sentence-transformers
-faiss-cpus
+faiss-cpu
 numpy
 requests
 pydantic
