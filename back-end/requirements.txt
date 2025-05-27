@@ -2,9 +2,8 @@ fastapi
 uvicorn
 python-dotenv
 supabase
-openai
 sentence-transformers
-faiss-cpu
+faiss-cpus
 numpy
 requests
 pydantic
