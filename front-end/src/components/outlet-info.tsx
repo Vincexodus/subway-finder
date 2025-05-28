@@ -32,7 +32,7 @@ export function OutletInfo({
   };
 
   return (
-    <Card className="absolute top-15 left-4 w-80 z-10 shadow-lg">
+    <Card className="absolute top-15 left-24 w-80 z-10 shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg">{outlet.name}</CardTitle>
